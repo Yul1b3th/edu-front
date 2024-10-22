@@ -4,3 +4,4 @@ export interface GeoJSONDistrict {
   geometria_etrs89: string;
   geometria_wgs84:  string;
 }
+
