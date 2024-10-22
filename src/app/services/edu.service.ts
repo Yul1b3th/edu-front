@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { environment } from '@environments/environment.development';
-import { Renta } from '@interfaces/rent';
+import { Data } from '@interfaces/data';
 
 import { Observable, tap } from 'rxjs';
 
@@ -12,27 +12,27 @@ export class EduService {
   private http = inject(HttpClient);
   private baseUrl = environment.baseUrl;
 
-  getRentaData(): Observable<Renta[]> {
+  getRentaData(): Observable<Data[]> {
     return this.http
-      .get<Renta[]>(`${this.baseUrl}/districts`)
+      .get<Data[]>(`${this.baseUrl}/districts`)
       .pipe(tap((data) => console.log('Renta data:', data)));
   }
 
-  getInfantilData(): Observable<Renta[]> {
+  getInfantilData(): Observable<Data[]> {
     return this.http
-      .get<Renta[]>(`${this.baseUrl}/infantil`)
+      .get<Data[]>(`${this.baseUrl}/infantil`)
       .pipe(tap((data) => console.log('Renta data:', data)));
   }
 
-  getPrimaryData(): Observable<Renta[]> {
+  getPrimaryData(): Observable<Data[]> {
     return this.http
-      .get<Renta[]>(`${this.baseUrl}/primary`)
+      .get<Data[]>(`${this.baseUrl}/primary`)
       .pipe(tap((data) => console.log('Renta data:', data)));
   }
 
-  getSecondaryData(): Observable<Renta[]> {
+  getSecondaryData(): Observable<Data[]> {
     return this.http
-      .get<Renta[]>(`${this.baseUrl}/secondary`)
+      .get<Data[]>(`${this.baseUrl}/secondary`)
       .pipe(tap((data) => console.log('Renta data:', data)));
   }
 }

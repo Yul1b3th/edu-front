@@ -1,6 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { AfterViewInit, Component, inject } from '@angular/core';
 import { environment } from '@environments/environment.development';
+import { GeoJSONDistrict } from '@interfaces/geoJsonDistrict';
 import { EduService } from '@services/edu.service';
 import mapboxgl from 'mapbox-gl';
 
@@ -32,7 +33,7 @@ export class MapComponent implements AfterViewInit {
 
     // Cargar los datos de los límites de los distritos desde el archivo JSON
     this.map.on('load', () => {
-      this.http.get('/barcelona-distritos.json').subscribe((data: any) => {
+      this.http.get<GeoJSONDistrict[]>('/barcelona-distritos.json').subscribe((data: GeoJSONDistrict[]) => {
         const geojsonData = this.convertToGeoJson(data);
 
         this.map.addSource('distritos', {
