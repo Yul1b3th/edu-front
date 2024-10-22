@@ -20,7 +20,7 @@ export class EduService {
 
   getInfantilData(): Observable<Renta[]> {
     return this.http
-      .get<Renta[]>(`${this.baseUrl}/infantil`)
+      .get<Renta[]>(`${this.baseUrl}//districts/infantil`)
       .pipe(tap((data) => console.log('Renta data:', data)));
   }
 
