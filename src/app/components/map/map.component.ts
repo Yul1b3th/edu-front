@@ -8,6 +8,7 @@ import {
 } from '@angular/core';
 import { environment } from '@environments/environment.development';
 import { GeoJSONDistrict } from '@interfaces/geoJsonDistrict';
+import { CentreFiltersService } from '@services/centre-filters.service';
 import { EduService } from '@services/edu.service';
 import mapboxgl from 'mapbox-gl';
 

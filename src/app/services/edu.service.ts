@@ -20,19 +20,19 @@ export class EduService {
 
   getInfantilData(): Observable<Data[]> {
     return this.http
-      .get<Data[]>(`${this.baseUrl}/infantil`)
+      .get<Data[]>(`${this.baseUrl}/districts/infantil`)
       .pipe(tap((data) => console.log('Renta data:', data)));
   }
 
   getPrimaryData(): Observable<Data[]> {
     return this.http
-      .get<Data[]>(`${this.baseUrl}/primary`)
+      .get<Data[]>(`${this.baseUrl}/districts/primary`)
       .pipe(tap((data) => console.log('Renta data:', data)));
   }
 
   getSecondaryData(): Observable<Data[]> {
     return this.http
-      .get<Data[]>(`${this.baseUrl}/secondary`)
+      .get<Data[]>(`${this.baseUrl}/districts/secondary`)
       .pipe(tap((data) => console.log('Renta data:', data)));
   }
 }
