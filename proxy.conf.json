@@ -1,0 +1,10 @@
+{
+  "/api": {
+    "target": "https://hackatonitacademy-4eb658690555.herokuapp.com/api/districts/",
+    "secure": false,
+    "changeOrigin": true,
+    "pathRewrite": {
+      "^/api": ""
+    }
+  }
+}
