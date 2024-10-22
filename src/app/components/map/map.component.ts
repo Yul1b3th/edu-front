@@ -104,7 +104,6 @@ export class MapComponent implements AfterViewInit {
   }
 
   // Cargar los datos de la renta per cápita desde el backend y actualizar el mapa
-  // Cargar los datos de la renta per cápita desde el backend y actualizar el mapa
   loadRentaDataAndUpdateMap(): void {
     this.eduService.getRentaData().subscribe((rentaData: any) => {
       const source = this.map.getSource('distritos') as mapboxgl.GeoJSONSource;
