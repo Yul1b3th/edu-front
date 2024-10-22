@@ -2,7 +2,7 @@
   "rewrites": [
     {
       "source": "/api/:match*",
-      "destination": "https://hackatonitacademy-4eb658690555.herokuapp.com/api/districts/:match*"
+      "destination": "https://hackatonitacademy-4eb658690555.herokuapp.com/api/districts:match*"
     }
   ],
   "headers": [
