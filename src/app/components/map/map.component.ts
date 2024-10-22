@@ -1,5 +1,5 @@
 import { HttpClient } from '@angular/common/http';
-import { AfterViewInit, Component } from '@angular/core';
+import { AfterViewInit, Component, inject } from '@angular/core';
 import { environment } from '@environments/environment.development';
 import mapboxgl from 'mapbox-gl';
 
@@ -16,7 +16,7 @@ mapboxgl.accessToken =
 export class MapComponent implements AfterViewInit {
   map!: mapboxgl.Map;
 
-  constructor(private http: HttpClient) {}
+  private http = inject(HttpClient);
 
   // distritosData = {
   //   "distritos": [
