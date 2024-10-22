@@ -1,7 +1,8 @@
 import { HttpClient } from '@angular/common/http';
 import { AfterViewInit, Component, inject } from '@angular/core';
 import { environment } from '@environments/environment.development';
-import mapboxgl from 'mapbox-gl';
+import { MapService } from '@services/map.service';
+import mapboxgl, { LngLat, Marker } from 'mapbox-gl';
 
 mapboxgl.accessToken =
   'pk.eyJ1IjoiYWRwdGNvZGUiLCJhIjoiY20yajNyM2wxMDFoaDJqc2I4dG5keXAzaCJ9.qIRLrPbj_pGnE0QzjbwkUw';
@@ -15,50 +16,31 @@ mapboxgl.accessToken =
 })
 export class MapComponent implements AfterViewInit {
   map!: mapboxgl.Map;
-
+  markers: any[] = [];
   private http = inject(HttpClient);
-
-  // distritosData = {
-  //   "distritos": [
-  //     {
-  //       "nombre": "Eixample",
-  //       "id": 1,
-  //       "valor": 30000,
-  //       "orden": 3,
-  //       "coordinates": [[[2.1527, 41.4036], [2.1677, 41.3833], [2.1773, 41.3879], [2.1623, 41.4082], [2.1527, 41.4036]]]
-  //     },
-  //     {
-  //       "nombre": "Ciutat Vella",
-  //       "id": 2,
-  //       "valor": 25000,
-  //       "orden": 1,
-  //       "coordinates": [[[2.1769, 41.3797], [2.1851, 41.3762], [2.1832, 41.3723], [2.1723, 41.3753], [2.1769, 41.3797]]]
-  //     },
-  //     {
-  //       "nombre": "Sants-Montjuïc",
-  //       "id": 3,
-  //       "valor": 20000,
-  //       "orden": 2,
-  //       "coordinates": [[[2.1416, 41.3726], [2.1540, 41.3641], [2.1496, 41.3565], [2.1368, 41.3648], [2.1416, 41.3726]]]
-  //     },
-  //     {
-  //       "nombre": "Gràcia",
-  //       "id": 4,
-  //       "valor": 40000,
-  //       "orden": 4,
-  //       "coordinates": [[[2.1570, 41.4102], [2.1686, 41.4068], [2.1694, 41.3998], [2.1564, 41.4021], [2.1570, 41.4102]]]
-  //     },
-  //     {
-  //       "nombre": "Sant Martí",
-  //       "id": 5,
-  //       "valor": 35000,
-  //       "orden": 5,
-  //       "coordinates": [[[2.1950, 41.4101], [2.2080, 41.4024], [2.2015, 41.3955], [2.1885, 41.4003], [2.1950, 41.4101]]]
-  //     }
-  //   ]
-  // };
+  private mapService = inject(MapService)
 
   ngAfterViewInit(): void {
+
+    this.markers = this.mapService.coordenadasDistritos;
+
+    for (let i = 0; i < this.markers.length; i++){
+      const coordinates: LngLat = new LngLat(
+        this.markers[i].long,
+        this.markers[i].lat
+      );
+      const markerHtml = document.createElement('div');
+      markerHtml.className = 'marker';
+      markerHtml.innerHTML = this.markers[i].name
+
+      const marker = new Marker({
+        element: markerHtml,
+      })
+        .setLngLat(coordinates)
+        .addTo(this.map);
+    };
+
+
     // Inicializa el mapa
     this.map = new mapboxgl.Map({
       accessToken: environment.mapboxToken,
