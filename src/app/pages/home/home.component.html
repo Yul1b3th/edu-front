@@ -45,10 +45,27 @@
           <div class="flex flex-col justify-center items-center p-4 rounded-lg ">
             <div class="overflow-hidden w-full h-[500px] rounded-lg shadow-md"> <app-map></app-map>
             </div>
-            <div class="w-full bg-gray-100 text-center mt-10 h-56 rounded-lg shadow-md">
+            <div class="legend flex flex-col md:flex-row gap-3 justify-center items-center mt-8">
+              <div class="col-1 flex justify-center items-center"><span>Renta bruta anual por unidad familiar:</span>
+              </div>
+              <div class="col-2 flex flex-wrap">
+                <div class="flex justify-center items-center text-sm text-center w-[120px] bg-low"><span>Hasta
+                    35k</span></div>
+                <div class="flex justify-center items-center text-sm text-center w-[120px] bg-medium"><span>De
+                    35k a 45k</span></div>
+                <div class="flex justify-center items-center text-sm text-center w-[120px] bg-high"><span>De
+                    45k a 55k</span></div>
+                <div class="flex justify-center items-center text-sm text-center w-[120px] bg-veryHigh">
+                  <span>De 55k a 65k</span>
+                </div>
+                <div class="flex justify-center items-center text-sm text-center w-[120px] bg-extreme"><span>De
+                    65k a 80k</span></div>
+              </div>
+            </div>
+            <!-- <div class="w-full bg-gray-100 text-center mt-10 h-56 rounded-lg shadow-md">
               <h3 class="text-2xl mt-8 mb-4">Más información</h3>
               <p></p>
-            </div>
+            </div> -->
           </div>
         </div>
       </div>
