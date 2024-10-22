@@ -12,12 +12,20 @@ mapboxgl.accessToken =
   styleUrl: './map.component.scss',
 })
 export class MapComponent implements AfterViewInit {
+
+  map!: mapboxgl.Map;
+
+
   ngAfterViewInit(): void {
-    const map = new mapboxgl.Map({
+
+    this.map = new mapboxgl.Map({
       container: 'map', // container ID
       style: 'mapbox://styles/mapbox/streets-v12', // style URL
-      center: [2.15899, 41.38879], // starting position [lng, lat]
-      zoom: 9, // starting zoom
+      center: [2.1734, 41.3851], // starting position [lng, lat]
+      zoom: 12, // starting zoom
     });
+
+
+
   }
 }
