@@ -20,7 +20,7 @@ export class HomeComponent {
 
   getData(){
     this.mapService.getSchoolData().subscribe( (data: any) => {
-      console.log(data);
+      console.log(('data: '), data);
       this.schoolData = data;
     })
   }
