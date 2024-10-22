@@ -1,5 +1,4 @@
 <div class="flex flex-col min-h-screen">
-
   <app-header />
 
   <!-- Main -->
@@ -8,47 +7,102 @@
       <div class="flex flex-col md:flex-row">
         <!-- Columna Izquierda -->
         <div class="w-full md:w-1/5 p-2 md:p-4">
-          <nav class="flex flex-col items-center justify-center md:justify-left p-4 rounded-lg gap-y-5">
+          <nav
+            class="flex flex-col items-center justify-center md:justify-left p-4 rounded-lg gap-y-5"
+          >
             <!-- Filtros -->
-            <h3 class="text-2xl mb-2">Filtrar por centro:</h3>
+            <h3 class="text-xl mb-2 text-center">Filtrar per centre:</h3>
             <ul
-              class="flex flex-wrap md:flex-row flex-wrap justify-center md:flex-col md:flex-row gap-x-4 gap-y-3 md:gap-y-6">
+              class="flex flex-wrap md:flex-row flex-wrap justify-center md:flex-col md:flex-row gap-x-4 gap-y-3 md:gap-y-6"
+            >
               <li
-                class="text-sm text-center bg-gray-500 transform hover:scale-105 transition-transform duration-300 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded-full cursor-pointer ">
-                Todos
+                class="text-sm text-center bg-gray-500 transform hover:scale-105 transition-transform duration-300 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded-full cursor-pointer"
+              >
+                Tots
               </li>
+              <!-- Infantil -->
               <li
-                class="text-sm text-center bg-blue-500 hover:scale-105 transition-transform duration-300 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full cursor-pointer ">
+                class="text-sm text-center bg-blue-500 hover:scale-105 transition-transform duration-300 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full cursor-pointer"
+              >
+                Infantil
+              </li>
+              <!-- Primaria -->
+              <li
+                class="text-sm text-center bg-blue-500 hover:scale-105 transition-transform duration-300 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full cursor-pointer"
+              >
                 Primaria
               </li>
+              <!-- Secundària -->
               <li
-                class="text-sm text-center bg-blue-500 hover:scale-105 transition-transform duration-300 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full cursor-pointer ">
-                Secundaria
+                class="text-sm text-center bg-blue-500 hover:scale-105 transition-transform duration-300 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full cursor-pointer"
+              >
+                Secundària
               </li>
-              <li
+              <!-- Universitària -->
+              <!-- <li
                 class="text-sm text-center bg-blue-500 hover:scale-105 transition-transform duration-300 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full cursor-pointer ">
-                Universitaria
-              </li>
-              <li
+                Universitària
+              </li> -->
+              <!-- No reglada -->
+              <!-- <li
                 class="text-sm text-center bg-blue-500 hover:scale-105 transition-transform duration-300 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full cursor-pointer ">
                 No reglada
-              </li>
-              <li
+              </li> -->
+              <!-- Activitats -->
+              <!-- <li
                 class="text-sm text-center bg-blue-500 hover:scale-105 transition-transform duration-300 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full cursor-pointer ">
-                Actividades
-              </li>
+                Activitats
+              </li> -->
             </ul>
           </nav>
         </div>
         <!-- Columna Derecha -->
         <div class="w-full md:w-4/5 p-2">
-          <div class="flex flex-col justify-center items-center p-4 rounded-lg ">
-            <div class="overflow-hidden w-full h-[500px] rounded-lg shadow-md"> <app-map></app-map>
+          <div class="flex flex-col justify-center items-center p-4 rounded-lg">
+            <div class="overflow-hidden w-full h-[500px] rounded-lg shadow-md">
+              <app-map></app-map>
             </div>
-            <div class="w-full bg-gray-100 text-center mt-10 h-56 rounded-lg shadow-md">
+            <div
+              class="legend flex flex-col md:flex-row gap-3 justify-center items-center mt-8"
+            >
+              <div class="col-1 flex justify-center items-center">
+                <span
+                  ><i class="fa-solid fa-circle-info pr-2"></i>Renda bruta anual
+                  per unitat familiar:
+                </span>
+              </div>
+              <div class="col-2 flex flex-wrap">
+                <div
+                  class="flex justify-center items-center text-sm text-center w-[120px] bg-low"
+                >
+                  <span>Fins a 35k</span>
+                </div>
+                <div
+                  class="flex justify-center items-center text-sm text-center w-[120px] bg-medium"
+                >
+                  <span>De 35k a 45k</span>
+                </div>
+                <div
+                  class="flex justify-center items-center text-sm text-center w-[120px] bg-high"
+                >
+                  <span>De 45k a 55k</span>
+                </div>
+                <div
+                  class="flex justify-center items-center text-sm text-center w-[120px] bg-veryHigh"
+                >
+                  <span>De 55k a 65k</span>
+                </div>
+                <div
+                  class="flex justify-center items-center text-sm text-center w-[120px] bg-extreme"
+                >
+                  <span>De 65k a 80k</span>
+                </div>
+              </div>
+            </div>
+            <!-- <div class="w-full bg-gray-100 text-center mt-10 h-56 rounded-lg shadow-md">
               <h3 class="text-2xl mt-8 mb-4">Más información</h3>
               <p></p>
-            </div>
+            </div> -->
           </div>
         </div>
       </div>
