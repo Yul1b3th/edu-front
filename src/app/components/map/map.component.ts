@@ -7,7 +7,7 @@ import {
   OnInit,
 } from '@angular/core';
 import { environment } from '@environments/environment.development';
-import { CentreFiltersService } from '@services/centre-filters.service';
+import { GeoJSONDistrict } from '@interfaces/geoJsonDistrict';
 import { EduService } from '@services/edu.service';
 import mapboxgl from 'mapbox-gl';
 
@@ -51,38 +51,40 @@ export class MapComponent implements AfterViewInit {
 
     // Cargar los datos de los límites de los distritos desde el archivo JSON
     this.map.on('load', () => {
-      this.http.get('/barcelona-distritos.json').subscribe((data: any) => {
-        const geojsonData = this.convertToGeoJson(data);
+      this.http
+        .get<GeoJSONDistrict[]>('/barcelona-distritos.json')
+        .subscribe((data: GeoJSONDistrict[]) => {
+          const geojsonData = this.convertToGeoJson(data);
 
-        this.map.addSource('distritos', {
-          type: 'geojson',
-          data: geojsonData,
+          this.map.addSource('distritos', {
+            type: 'geojson',
+            data: geojsonData,
+          });
+
+          this.map.addLayer({
+            id: 'distritos-fill',
+            type: 'fill',
+            source: 'distritos',
+            paint: {
+              'fill-color': '#ccc', // Color inicial, se actualizará luego
+              'fill-opacity': 0.6,
+            },
+          });
+
+          // Añadir un borde a los distritos
+          this.map.addLayer({
+            id: 'distritos-line',
+            type: 'line',
+            source: 'distritos',
+            paint: {
+              'line-color': '#000',
+              'line-width': 2,
+            },
+          });
+
+          // Después de agregar los límites de los distritos, obtener los datos del backend
+          this.loadRentaDataAndUpdateMap();
         });
-
-        this.map.addLayer({
-          id: 'distritos-fill',
-          type: 'fill',
-          source: 'distritos',
-          paint: {
-            'fill-color': '#ccc', // Color inicial, se actualizará luego
-            'fill-opacity': 0.6,
-          },
-        });
-
-        // Añadir un borde a los distritos
-        this.map.addLayer({
-          id: 'distritos-line',
-          type: 'line',
-          source: 'distritos',
-          paint: {
-            'line-color': '#000',
-            'line-width': 2,
-          },
-        });
-
-        // Después de agregar los límites de los distritos, obtener los datos del backend
-        this.loadRentaDataAndUpdateMap();
-      });
     });
   }
 

@@ -1,4 +1,4 @@
-export interface Renta {
+export interface Data {
   id:         number;
   name:       string;
   valor:      number;
