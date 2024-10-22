@@ -12,6 +12,32 @@ La aplicación muestra mapas interactivos con los siguientes indicadores clave p
 
 Esta información es de acceso público y proviene de datasets sobre educación de OpenData Barcelona, permitiendo al usuario visualizar cómo se relacionan estos indicadores en cada distrito.
 
+## Instalación
+
+1. Clona este repositorio en tu máquina local:
+
+```
+  git clone (https://github.com/Yul1b3th/edu-front.git)
+```
+
+2. Navega al directorio del proyecto:
+ 
+```
+  cd edu-front
+```
+   
+3. Instala las dependencias necesarias:
+
+```
+   npm install
+```
+
+## Live demo
+
+Puedes ver una demo en vivo de la aplicación en el siguiente enlace:
+https://edu-front-delta.vercel.app/
+
+
 ## Estructura del Proyecto
 
 ### 1. Data Analyst
