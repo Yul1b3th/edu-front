@@ -1,6 +1,13 @@
 import { HttpClient } from '@angular/common/http';
-import { AfterViewInit, Component, inject } from '@angular/core';
+import {
+  AfterViewInit,
+  Component,
+  effect,
+  inject,
+  OnInit,
+} from '@angular/core';
 import { environment } from '@environments/environment.development';
+import { CentreFiltersService } from '@services/centre-filters.service';
 import { EduService } from '@services/edu.service';
 import mapboxgl from 'mapbox-gl';
 
@@ -15,10 +22,22 @@ mapboxgl.accessToken =
   styleUrl: './map.component.scss',
 })
 export class MapComponent implements AfterViewInit {
+  private readonly centreFiltersService = inject(CentreFiltersService);
   map!: mapboxgl.Map;
 
   private http = inject(HttpClient);
   private eduService = inject(EduService);
+
+  constructor() {
+    // Reaccionar a los cambios en la señal selectedCentre
+    effect(() => {
+      const selectedCentre = this.centreFiltersService.selectedCentre();
+      console.log('Selected Centre changed:', selectedCentre);
+      // if (selectedCentre === 'Infantil') {
+      //   this.loadInfantilDataAndUpdateMap();
+      // }
+    });
+  }
 
   ngAfterViewInit(): void {
     // Inicializa el mapa
@@ -111,7 +130,9 @@ export class MapComponent implements AfterViewInit {
 
       if (source) {
         // Actualizar los datos de GeoJSON con la renta per cápita y asignar el colorIndex
-        const updatedFeatures = (source._data as GeoJSON.FeatureCollection).features.map((feature: any) => {
+        const updatedFeatures = (
+          source._data as GeoJSON.FeatureCollection
+        ).features.map((feature: any) => {
           const renta = rentaData.find((r: any) => {
             // Asegurarse de que los IDs estén en el mismo formato para la comparación
             return r.id.toString().padStart(2, '0') === feature.properties.id;
@@ -122,7 +143,9 @@ export class MapComponent implements AfterViewInit {
             properties: {
               ...feature.properties,
               valor: renta ? renta.valor : feature.properties.valor,
-              colorIndex: renta ? renta.colorIndex : feature.properties.colorIndex,
+              colorIndex: renta
+                ? renta.colorIndex
+                : feature.properties.colorIndex,
             },
           };
         });
@@ -141,16 +164,53 @@ export class MapComponent implements AfterViewInit {
           'interpolate',
           ['linear'],
           ['get', 'valor'],
-          35000, '#f28cb1',  // Color para valores bajos (rosa)
-          45000, '#3bb2d0',  // Color para valores medios (azul claro)
-          55000, '#2a9d8f',  // Color adicional para valores altos (verde esmeralda)
-          65000, '#e9c46a',  // Color adicional para valores muy altos (amarillo claro)
-          80000, '#e76f51'   // Color para valores extremadamente altos (naranja)
+          35000,
+          '#f28cb1', // Color para valores bajos (rosa)
+          45000,
+          '#3bb2d0', // Color para valores medios (azul claro)
+          55000,
+          '#2a9d8f', // Color adicional para valores altos (verde esmeralda)
+          65000,
+          '#e9c46a', // Color adicional para valores muy altos (amarillo claro)
+          80000,
+          '#e76f51', // Color para valores extremadamente altos (naranja)
         ]);
       }
     });
   }
 
+  // Cargar los datos de infantil y dibujar círculos en el mapa
+  // loadInfantilDataAndUpdateMap(): void {
+  //   this.eduService.getInfantilData().subscribe((infantilData: Renta[]) => {
+  //     infantilData.forEach((distrito) => {
+  //       const coordinates = this.getDistrictCoordinates(distrito.name);
+  //       if (coordinates) {
+  //         new mapboxgl.Marker({
+  //           color: 'blue',
+  //           scale: distrito.percentage / 10,
+  //         })
+  //           .setLngLat(coordinates)
+  //           .addTo(this.map);
+  //       }
+  //     });
+  //   });
+  // }
 
+  // Obtener las coordenadas del distrito por nombre
+  getDistrictCoordinates(districtName: string): [number, number] | null {
+    const districtCoordinates: { [key: string]: [number, number] } = {
+      'Ciutat Vella': [2.1734, 41.3851],
+      Gràcia: [2.15899, 41.4096],
+      'Horta-Guinardó': [2.1651, 41.4298],
+      Eixample: [2.162, 41.3888],
+      'Les Corts': [2.1319, 41.3818],
+      'Nou Barris': [2.1774, 41.4416],
+      'Sant Andreu': [2.1911, 41.4351],
+      'Sant Martí': [2.1995, 41.4186],
+      'Sants-Montjuïc': [2.1419, 41.3723],
+      'Sarrià-Sant Gervasi': [2.1343, 41.401],
+    };
 
+    return districtCoordinates[districtName] || null;
+  }
 }
