@@ -1,3 +1,60 @@
-<div>
-  <app-map></app-map>
+<div class="flex flex-col min-h-screen">
+
+  <app-header />
+
+  <!-- Main -->
+  <main class="flex-grow py-8 px-4">
+    <div class="container mx-auto">
+      <div class="flex flex-col md:flex-row">
+        <!-- Columna Izquierda -->
+        <div class="w-full md:w-1/5 p-2 md:p-4">
+          <nav class="flex md:flex-col md:items-center justify-center md:justify-left p-4 rounded-lg ">
+            <!-- Filtros -->
+            <ul
+              class="flex flex-col md:flex-row flex-wrap justify-center md:flex-col md:flex-row gap-x-8 gap-y-3 md:gap-y-6">
+              <h3 class="text-2xl mb-2">Filtrar por centro:</h3>
+              <li
+                class="text-sm text-center bg-gray-500 transform hover:scale-105 transition-transform duration-300 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded-full cursor-pointer ">
+                Todos
+              </li>
+              <li
+                class="text-sm text-center bg-blue-500 hover:scale-105 transition-transform duration-300 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full cursor-pointer ">
+                Primaria
+              </li>
+              <li
+                class="text-sm text-center bg-blue-500 hover:scale-105 transition-transform duration-300 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full cursor-pointer ">
+                Secundaria
+              </li>
+              <li
+                class="text-sm text-center bg-blue-500 hover:scale-105 transition-transform duration-300 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full cursor-pointer ">
+                Universitaria
+              </li>
+              <li
+                class="text-sm text-center bg-blue-500 hover:scale-105 transition-transform duration-300 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full cursor-pointer ">
+                No reglada
+              </li>
+              <li
+                class="text-sm text-center bg-blue-500 hover:scale-105 transition-transform duration-300 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full cursor-pointer ">
+                Actividades
+              </li>
+            </ul>
+          </nav>
+        </div>
+        <!-- Columna Derecha -->
+        <div class="w-full md:w-4/5 p-2">
+          <div class="flex flex-col justify-center items-center p-4 rounded-lg ">
+            <div class="overflow-hidden w-full h-[500px] rounded-lg shadow-md"> <app-map></app-map>
+            </div>
+            <div class="w-full bg-gray-100 text-center mt-10 h-56 rounded-lg">
+              <h3 class="text-2xl mt-8 mb-4">Más información</h3>
+              <p></p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <app-footer />
 </div>
