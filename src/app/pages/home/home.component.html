@@ -13,30 +13,33 @@
             <h3 class="text-xl mb-2 text-center">Filtrar por centro:</h3>
             <ul
               class="flex flex-wrap md:flex-row flex-wrap justify-center md:flex-col md:flex-row gap-x-4 gap-y-3 md:gap-y-6">
-              <li
+              <button
                 class="text-sm text-center bg-gray-500 transform hover:scale-105 transition-transform duration-300 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded-full cursor-pointer ">
                 Todos
-              </li>
-              <li
-                class="text-sm text-center bg-blue-500 hover:scale-105 transition-transform duration-300 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full cursor-pointer ">
+              </button>
+              <button
+                class="text-sm text-center bg-blue-500 hover:scale-105
+                transition-transform duration-300 hover:bg-blue-700
+                text-white font-bold py-2 px-4 rounded-full cursor-pointer"
+                (click)="getData()">
                 Primaria
-              </li>
-              <li
+              </button>
+              <button
                 class="text-sm text-center bg-blue-500 hover:scale-105 transition-transform duration-300 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full cursor-pointer ">
                 Secundaria
-              </li>
-              <li
+              </button>
+              <button
                 class="text-sm text-center bg-blue-500 hover:scale-105 transition-transform duration-300 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full cursor-pointer ">
                 Universitaria
-              </li>
-              <li
+              </button>
+              <button
                 class="text-sm text-center bg-blue-500 hover:scale-105 transition-transform duration-300 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full cursor-pointer ">
                 No reglada
-              </li>
-              <li
+              </button>
+              <button
                 class="text-sm text-center bg-blue-500 hover:scale-105 transition-transform duration-300 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full cursor-pointer ">
                 Actividades
-              </li>
+              </button>
             </ul>
           </nav>
         </div>

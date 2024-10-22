@@ -1,9 +1,16 @@
-import { Injectable } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { inject, Injectable } from '@angular/core';
+import { environment } from '@environments/environment';
+import { SchoolData } from '@interfaces/school-data.interface';
+import { Observable } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
 })
 export class MapService {
+
+  http = inject(HttpClient);
+  private baseUrl = environment.baseUrl;
 
   coordenadasDistritos = [
     {
@@ -58,6 +65,13 @@ export class MapService {
     }
   ]
 
-
   constructor() { }
+
+  getSchoolData(): Observable<SchoolData>{
+    // return this.http.get<SchoolData>(`${this.baseUrl}/districts/infantil`)
+    return this.http.get<SchoolData>("https://hackatonitacademy-4eb658690555.herokuapp.com/api/districts/infantil");
+  }
+
+
+
 }
