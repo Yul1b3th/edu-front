@@ -200,6 +200,16 @@ export class MapComponent implements AfterViewInit {
               .setLngLat(coordinates)
               .addTo(this.map);
 
+                // Crea il popup con le informazioni di 'percentage' e 'total'
+        const popup = new mapboxgl.Popup({ offset: 25 }).setHTML(
+          `<h4>${distrito.name}</h4>
+          <p><strong>Total:</strong> ${distrito.total}</p>
+          <p><strong>Percentage:</strong> ${distrito.percentage.toFixed(2)}%</p>`
+        );
+
+        // Aggiungi l'evento 'click' al marker per aprire il popup
+        marker.setPopup(popup);
+
             this.markers.push(marker); // Almacenar el marcador
           }
         });
@@ -220,6 +230,16 @@ export class MapComponent implements AfterViewInit {
           })
             .setLngLat(coordinates)
             .addTo(this.map);
+
+              // Crea il popup con le informazioni di 'percentage' e 'total'
+        const popup = new mapboxgl.Popup({ offset: 25 }).setHTML(
+          `<h4>${distrito.name}</h4>
+          <p><strong>Total:</strong> ${distrito.total}</p>
+          <p><strong>Percentage:</strong> ${distrito.percentage.toFixed(2)}%</p>`
+        );
+
+        // Aggiungi l'evento 'click' al marker per aprire il popup
+        marker.setPopup(popup);
 
           this.markers.push(marker); // Almacenar el marcador
         }
@@ -243,6 +263,16 @@ export class MapComponent implements AfterViewInit {
             })
               .setLngLat(coordinates)
               .addTo(this.map);
+
+                // Crea il popup con le informazioni di 'percentage' e 'total'
+        const popup = new mapboxgl.Popup({ offset: 25 }).setHTML(
+          `<h4>${distrito.name}</h4>
+          <p><strong>Total:</strong> ${distrito.total}</p>
+          <p><strong>Percentage:</strong> ${distrito.percentage.toFixed(2)}%</p>`
+        );
+
+        // Aggiungi l'evento 'click' al marker per aprire il popup
+        marker.setPopup(popup);
 
             this.markers.push(marker); // Almacenar el marcador
           }
