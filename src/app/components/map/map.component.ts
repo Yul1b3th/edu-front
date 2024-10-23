@@ -7,7 +7,11 @@ import {
   OnInit,
 } from '@angular/core';
 import { environment } from '@environments/environment.development';
+import { Data } from '@interfaces/data';
 import { GeoJSONDistrict } from '@interfaces/geoJsonDistrict';
+import { InfantilData } from '@interfaces/infantil.interface';
+import { PrimaryData } from '@interfaces/primary.interface';
+import { SecondaryData } from '@interfaces/secondary.interface';
 import { CentreFiltersService } from '@services/centre-filters.service';
 import { EduService } from '@services/edu.service';
 import mapboxgl from 'mapbox-gl';
@@ -24,19 +28,17 @@ mapboxgl.accessToken =
 })
 export class MapComponent implements AfterViewInit {
   private readonly centreFiltersService = inject(CentreFiltersService);
-  map!: mapboxgl.Map;
-
   private http = inject(HttpClient);
   private eduService = inject(EduService);
+  map!: mapboxgl.Map;
+  private markers: mapboxgl.Marker[] = []; // Almacena los marcadores
 
   constructor() {
     // Reaccionar a los cambios en la señal selectedCentre
     effect(() => {
       const selectedCentre = this.centreFiltersService.selectedCentre();
       console.log('Selected Centre changed:', selectedCentre);
-      // if (selectedCentre === 'Infantil') {
-      //   this.loadInfantilDataAndUpdateMap();
-      // }
+      this.updateMapBasedOnSelectedCentre(selectedCentre);
     });
   }
 
@@ -126,7 +128,6 @@ export class MapComponent implements AfterViewInit {
   }
 
   // Cargar los datos de la renta per cápita desde el backend y actualizar el mapa
-  // Cargar los datos de la renta per cápita desde el backend y actualizar el mapa
   loadRentaDataAndUpdateMap(): void {
     this.eduService.getRentaData().subscribe((rentaData: any) => {
       const source = this.map.getSource('distritos') as mapboxgl.GeoJSONSource;
@@ -183,21 +184,88 @@ export class MapComponent implements AfterViewInit {
   }
 
   // Cargar los datos de infantil y dibujar círculos en el mapa
-  // loadInfantilDataAndUpdateMap(): void {
-  //   this.eduService.getInfantilData().subscribe((infantilData: Renta[]) => {
-  //     infantilData.forEach((distrito) => {
-  //       const coordinates = this.getDistrictCoordinates(distrito.name);
-  //       if (coordinates) {
-  //         new mapboxgl.Marker({
-  //           color: 'blue',
-  //           scale: distrito.percentage / 10,
-  //         })
-  //           .setLngLat(coordinates)
-  //           .addTo(this.map);
-  //       }
-  //     });
-  //   });
-  // }
+  loadInfantilDataAndUpdateMap(): void {
+    this.eduService
+      .getInfantilData()
+      .subscribe((infantilData: InfantilData[]) => {
+        this.clearMarkers(); // Eliminar marcadores anteriores
+        infantilData.forEach((distrito) => {
+          console.log(distrito);
+          const coordinates = this.getDistrictCoordinates(distrito.name);
+          if (coordinates) {
+            const marker = new mapboxgl.Marker({
+              color: 'blue', // Color para Infantil
+              scale: distrito.percentage ? distrito.percentage / 10 : 1, // Fallback si percentage es indefinido
+            })
+              .setLngLat(coordinates)
+              .addTo(this.map);
+
+            this.markers.push(marker); // Almacenar el marcador
+          }
+        });
+      });
+  }
+
+  // Cargar los datos de primaria y dibujar círculos en el mapa
+  loadPrimaryDataAndUpdateMap(): void {
+    this.eduService.getPrimaryData().subscribe((primaryData: PrimaryData[]) => {
+      this.clearMarkers(); // Eliminar marcadores anteriores
+      primaryData.forEach((distrito) => {
+        console.log(distrito);
+        const coordinates = this.getDistrictCoordinates(distrito.name);
+        if (coordinates) {
+          const marker = new mapboxgl.Marker({
+            color: 'green', // Color para Primaria
+            scale: distrito.percentage ? distrito.percentage / 10 : 1, // Fallback si percentage es indefinido
+          })
+            .setLngLat(coordinates)
+            .addTo(this.map);
+
+          this.markers.push(marker); // Almacenar el marcador
+        }
+      });
+    });
+  }
+
+  // Cargar los datos de secundaria y dibujar círculos en el mapa
+  loadSecondaryDataAndUpdateMap(): void {
+    this.eduService
+      .getSecondaryData()
+      .subscribe((secondaryData: SecondaryData[]) => {
+        this.clearMarkers(); // Eliminar marcadores anteriores
+        secondaryData.forEach((distrito) => {
+          console.log(distrito);
+          const coordinates = this.getDistrictCoordinates(distrito.name);
+          if (coordinates) {
+            const marker = new mapboxgl.Marker({
+              color: 'orange', // Color para Secundària
+              scale: distrito.percentage ? distrito.percentage / 10 : 1, // Fallback si percentage es indefinido
+            })
+              .setLngLat(coordinates)
+              .addTo(this.map);
+
+            this.markers.push(marker); // Almacenar el marcador
+          }
+        });
+      });
+  }
+
+  // Limpiar marcadores del mapa
+  clearMarkers(): void {
+    this.markers.forEach((marker) => marker.remove());
+    this.markers = []; // Reiniciar la lista de marcadores
+  }
+
+  // Función que actualiza el mapa basado en el centro seleccionado
+  updateMapBasedOnSelectedCentre(selectedCentre: string): void {
+    if (selectedCentre === 'Infantil') {
+      this.loadInfantilDataAndUpdateMap();
+    } else if (selectedCentre === 'Primaria') {
+      this.loadPrimaryDataAndUpdateMap();
+    } else if (selectedCentre === 'Secundària') {
+      this.loadSecondaryDataAndUpdateMap();
+    }
+  }
 
   // Obtener las coordenadas del distrito por nombre
   getDistrictCoordinates(districtName: string): [number, number] | null {
