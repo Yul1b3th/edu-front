@@ -2,6 +2,9 @@ import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { environment } from '@environments/environment.development';
 import { Data } from '@interfaces/data';
+import { InfantilData } from '@interfaces/infantil.interface';
+import { PrimaryData } from '@interfaces/primary.interface';
+import { SecondaryData } from '@interfaces/secondary.interface';
 
 import { Observable, tap } from 'rxjs';
 
@@ -18,21 +21,21 @@ export class EduService {
       .pipe(tap((data) => console.log('Renta data:', data)));
   }
 
-  getInfantilData(): Observable<Data[]> {
+  getInfantilData(): Observable<InfantilData[]> {
     return this.http
-      .get<Data[]>(`${this.baseUrl}/infantil`)
+      .get<InfantilData[]>(`${this.baseUrl}/districts/infantil`)
+      .pipe(tap((data) => console.log('Infantil data:', data)));
+  }
+
+  getPrimaryData(): Observable<PrimaryData[]> {
+    return this.http
+      .get<PrimaryData[]>(`${this.baseUrl}/districts/primary`)
       .pipe(tap((data) => console.log('Renta data:', data)));
   }
 
-  getPrimaryData(): Observable<Data[]> {
+  getSecondaryData(): Observable<SecondaryData[]> {
     return this.http
-      .get<Data[]>(`${this.baseUrl}/primary`)
-      .pipe(tap((data) => console.log('Renta data:', data)));
-  }
-
-  getSecondaryData(): Observable<Data[]> {
-    return this.http
-      .get<Data[]>(`${this.baseUrl}/secondary`)
+      .get<SecondaryData[]>(`${this.baseUrl}/districts/secondary`)
       .pipe(tap((data) => console.log('Renta data:', data)));
   }
 }
