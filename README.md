@@ -138,7 +138,7 @@ El equipo de Front-End es responsable de crear la interfaz de usuario (UI) que p
 
 - Carlos Martinez
 - Julibeth Rivero
-- Francesc Ferré
+- Francesc Ferrer
 - Alessandro De Pietri Tonelli
 
 ## Funcionalidades de la Aplicación Web
