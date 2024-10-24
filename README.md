@@ -1,4 +1,4 @@
-# Proyecto: EDUMAP Barcelona
+# Proyecto: EduMap Barcelona
 
 ## Descripción General
 
@@ -75,9 +75,9 @@ El equipo de Data Analyst es responsable de realizar el análisis exploratorio d
 
 #### Equipo Data:
 
-- Simone Solieri
-- Esteban Piliponsky
-- Rodrigo Padilla
+- [Simone Solieri]()
+- [Esteban Piliponsky]()
+- [Rodrigo Padilla]()
 
 ### 2. Back-End
 
@@ -102,9 +102,9 @@ El equipo de Back-End es el encargado de recibir los datos limpios del equipo de
 
 #### Equipo Back End:
 
-- Alba Marquez
-- Miguel Granado
-- Diego Kurcbart
+- [Alba Marquez]()
+- [Miguel Granado]()
+- [Diego Kurcbart]()
 
 ### 3. Front-End
 
@@ -136,10 +136,10 @@ El equipo de Front-End es responsable de crear la interfaz de usuario (UI) que p
 
 #### Equipo Front End:
 
-- Carlos Martinez
-- Julibeth Rivero
-- Francesc Ferrer
-- Alessandro De Pietri Tonelli
+- [Carlos Martinez]()
+- [Yulibeth Rivero](https://github.com/Yul1b3th)
+- [Francesc Ferrer](https://github.com/fran-cesc)
+- [Alessandro De Pietri Tonelli]()
 
 ## Funcionalidades de la Aplicación Web
 

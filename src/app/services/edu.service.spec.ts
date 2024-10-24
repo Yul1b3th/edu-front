@@ -78,7 +78,7 @@ describe('EduService', () => {
     ];
 
     service.getSecondaryData().subscribe((data) => {
-      expect(data.length).toBe(1);
+      expect(data.length).toBe(2); // Cambiado de 1 a 2
       expect(data).toEqual(mockData);
     });
 
