@@ -1,174 +1,196 @@
-# Proyecto: EduMap Barcelona
+# EduMap Barcelona
 
-## Descripción General
+## Descripción
 
-Este proyecto tiene como objetivo crear una aplicación web que permita a los usuarios visualizar y analizar datos relacionados con el acceso y equidad a la educación en los diferentes distritos de Barcelona. El sistema está dividido en tres áreas de desarrollo: Data Analyst, Back-End, y Front-End.
+**EduMap Barcelona** es una aplicación web que permite a los usuarios visualizar
+y analizar datos relacionados con el acceso y la equidad en la educación de los
+diferentes distritos de Barcelona.
 
-La aplicación muestra mapas interactivos con los siguientes indicadores clave por distrito:
+La aplicación presenta mapas interactivos que muestran los siguientes
+indicadores clave por distrito:
 
-- Rentas medias familiares.
-- Cantidad de actividades educativas.
-- Establecimientos educativos reglados.
-- Establecimientos no reglados.
-- Actividades ofrecidas por centros cívicos.
+- Rentas medias familiares anuales
+- Establecimientos educativos de educación infantil
+- Establecimientos educativos de educación primaria
+- Establecimientos educativos de educación secundaria
 
-Esta información es de acceso público y proviene de datasets sobre educación de OpenData Barcelona, permitiendo al usuario visualizar cómo se relacionan estos indicadores en cada distrito.
+Estos datos provienen de **OpenData Barcelona**, garantizando que la información
+sea de acceso público y esté actualizada.
 
-## Instalación
+Este proyecto fue desarrollado como parte de la hackatón de la **IT Academy**,
+realizada el 22 de octubre de 2024, por un equipo compuesto por profesionales
+de: [**Data Analyst**](#equipo-data), [**Back-End**](#equipo-back-end) y
+[**Front-End**](#equipo-front-end).
 
-1. Clona este repositorio en tu máquina local:
+## Demo
 
-```
-  git clone (https://github.com/Yul1b3th/edu-front.git)
-```
+Puedes ver la demostración de la aplicación en
+[EduMap](https://edu-front-delta.vercel.app/).
 
-2. Navega al directorio del proyecto:
+## Características
 
-```
-  cd edu-front
-```
+- **Visualización Interactiva**: La aplicación ofrece mapas interactivos que
+  permiten a los usuarios explorar y analizar datos educativos de manera
+  intuitiva y dinámica.
 
-3. Instala las dependencias necesarias:
+- **Indicadores Clave**: Muestra información relevante, como rentas medias
+  familiares anuales y la ubicación de establecimientos educativos (infantil,
+  primario y secundario) en cada distrito de Barcelona.
 
-```
-   npm install
-```
+- **Acceso a Datos Públicos**: Utiliza datasets de OpenData Barcelona,
+  asegurando que la información sea accesible y actualizada para todos los
+  usuarios.
 
-## Live demo
+- **Diseño Responsivo**: La interfaz está diseñada para ser compatible con
+  dispositivos móviles y de escritorio, ofreciendo una experiencia uniforme en
+  todas las plataformas.
 
-Puedes ver una demo en vivo de la aplicación en el siguiente enlace:
-https://edu-front-delta.vercel.app/
+- **Integración con API**: Conexión directa con el backend para gestionar datos
+  de manera eficiente y en tiempo real.
 
-## Ejecución de Pruebas
+## Interacción con la API "EduMap"
 
-Para ejecutar la prueba en el proyecto, es con el siguiente comando en la terminal:
+Este proyecto frontend se integra con la API
+[EduMap](https://github.com/amarinite/hackatonITAcademy), la cual sigue una
+arquitectura RESTful, facilitando su integración y uso. Puedes explorar la
+[documentación de la API](https://hackatonitacademy-4eb658690555.herokuapp.com/webjars/swagger-ui/index.html)
+para obtener detalles sobre los endpoints, métodos HTTP y estructura de los
+datos.
+
+## Tecnologías Utilizadas
+
+- [HTML5](https://developer.mozilla.org/en-US/docs/Web/Guide/HTML/HTML5)
+- [SCSS](https://sass-lang.com/)
+- [TypeScript](https://www.typescriptlang.org/)
+- [Angular CLI](https://angular.dev/) versión 18.2.9
+- [Mapbox](https://www.mapbox.com/)
+- [Tailwind CSS](https://tailwindcss.com/)
+
+## Requisitos
+
+- Node.js y npm instalados en tu sistema. Descárgalos desde
+  [nodejs.org](https://nodejs.org/).
+- Angular CLI instalado globalmente. Instálalo con el siguiente comando:
 
 ```bash
-ng test --include src/app/path/to/your/edu.service.spec.ts
+npm install -g @angular/cli
 ```
 
-## Estructura del Proyecto
+## Instalación y Despliegue
 
-### 1. Data Analyst
+### Instalación
 
-El equipo de Data Analyst es responsable de realizar el análisis exploratorio de los datasets públicos. Se trabaja principalmente con Python con notebook y las librerías de análisis de datos son Pandas.
+1. Clona el repositorio:
 
-#### Tareas principales:
+   ```bash
+   git clone https://github.com/Yul1b3th/edu-front.git
+   ```
 
-- Recolección de datasets públicos.
-- Limpieza y tratamiento de los datos.
-- Exploración de los datos para identificar patrones y posibles correlaciones.
-- Preparación de los datos para ser utilizados por el equipo de Back-End.
+2. Ingresa al directorio del proyecto:
 
-#### Entregables:
+   ```bash
+   cd edu-front
+   ```
 
-- Un repositorio con los datasets limpios y tratados.
-- Un informe o notebook con el análisis exploratorio.
-- Archivos en formatos CSV o JSON listos para su integración con el Back-End.
+3. Instala las dependencias:
 
-#### Tecnologías:
+   ```bash
+   npm install
+   ```
 
-- Python
-- Librería Pandas
-- Notebook
-- Google Sheet
+4. Ejecuta la aplicación en modo desarrollo:
+
+   ```bash
+   ng serve -o
+   ```
+
+### Despliegue
+
+1. Ejecuta el comando de construcción para compilar la aplicación Angular:
+
+```bash
+ng build --prod
+```
+
+2. Los archivos generados se almacenarán en el directorio `dist/`. Puedes
+   desplegar estos archivos en un servidor web o en un servicio de alojamiento
+   que admita aplicaciones web estáticas.
+
+## Pruebas Unitarias con Karma y Jasmine
+
+Este proyecto cuenta con pruebas unitarias implementadas utilizando **Karma** y
+**Jasmine**.
+
+- **Servicio _EduService_**:
+
+  El servicio **_EduService_** incluye pruebas para garantizar que los datos se
+  obtienen correctamente desde la API, las cuales verifican: la obtención de
+  datos de renta de los distritos, asegurando que se recuperen adecuadamente; la
+  recuperación de datos relacionados con la educación infantil; la correcta
+  obtención de los datos de educación primaria; y la confirmación de que se
+  puedan obtener correctamente los datos de educación secundaria.
+
+  Para ejecutar las pruebas del servicio **_EduService_**, utiliza el comando:
+
+  ```bash
+  ng test --include src/app/path/to/your/edu.service.spec.ts
+  ```
+
+- **Componente _AppComponent_**:
+
+  El componente **_AppComponent_** tiene una prueba para verificar su correcta
+  creación. Se asegura de que el componente se inicialice correctamente y esté
+  disponible para su uso en la aplicación.
+
+  Para ejecutar las pruebas del componente **_AppComponent_**, utiliza el
+  comando:
+
+  ```bash
+  ng test --include src/app/path/to/your/app.component.spec.ts
+  ```
+
+Para ejecutar todas las pruebas en el proyecto, utiliza este comando:
+
+```bash
+ng test
+```
+
+## Equipo
+
+El equipo está compuesto por un grupo de profesionales apasionados por la
+tecnología y la innovación, especializados en las siguientes áreas:
 
 #### Equipo Data:
 
-- [Simone Solieri]()
-- [Esteban Piliponsky]()
-- [Rodrigo Padilla]()
-
-### 2. Back-End
-
-El equipo de Back-End es el encargado de recibir los datos limpios del equipo de Data Analyst, crear las API necesarias para que el Front-End pueda acceder a ellos, y manejar las interacciones con los datos.
-
-#### Tareas principales:
-
-- Preparación y diseño de las API para acceder a los datos limpios.
-- Estructuración de los endpoints para entregar los datos en función de los distritos y las variables necesarias.
-- Asegurar la comunicación eficiente entre el Front-End y los datos del servidor.
-
-#### Entregables:
-
-- API documentadas para acceder a los datos procesados.
-- Integración de los datos a través de los endpoints en un formato adecuado (JSON).
-
-#### Tecnologías:
-
-- Java 21
-- Spring Boot
-- H2
+<ul>
+    <li><a href="https://github.com/epili50" target="_blank">Esteban Piliponsky</a></li>
+    <li><a href="https://github.com/ErrePad/" target="_blank">Rodrigo Padilla</a></li>
+    <li><a href="https://github.com/sisolieri" target="_blank">Simone Solieri</a></li>
+</ul>
 
 #### Equipo Back End:
 
-- [Alba Marquez]()
-- [Miguel Granado]()
-- [Diego Kurcbart]()
-
-### 3. Front-End
-
-El equipo de Front-End es responsable de crear la interfaz de usuario (UI) que permitirá visualizar los datos provistos por el Back-End en forma de mapas interactivos.
-
-#### Tareas principales:
-
-- Desarrollo de la interfaz gráfica responsive para la aplicación web.
-- Integración con la API del Back-End para visualizar los datos en tiempo real.
-- Creación de mapas interactivos que visualizan las siguientes variables por distrito:
-  - Rentas medias familiares.
-  - Cantidad de actividades educativas.
-  - Establecimientos educativos reglados.
-  - Establecimientos educativos no reglados.
-  - Cantidad de actividades por centros cívicos.
-- Permitir la consulta de indicadores de manera interactiva y visual en el mapa.
-
-#### Entregables:
-
-- Aplicación web funcional con mapas interactivos.
-- Gráficos y visualizaciones de los datos que permitan una fácil interpretación de los indicadores.
-- Documentación de uso de la aplicación web.
-
-#### Tecnologías:
-
-- Angular
-- Mapbox (para los mapas interactivos)
-- Tailwind
+<ul>
+    <li><a href="https://github.com/amarinite" target="_blank">Alba Marquez</a></li>
+    <li><a href="https://github.com/dKurbi" target="_blank">Diego Kurcbart</a></li>
+    <li><a href="https://github.com/Mettanoia" target="_blank">Miguel Granado</a></li>
+</ul>
 
 #### Equipo Front End:
 
-- [Carlos Martinez]()
-- [Yulibeth Rivero](https://github.com/Yul1b3th)
-- [Francesc Ferrer](https://github.com/fran-cesc)
-- [Alessandro De Pietri Tonelli]()
+<ul>
+    <li><a href="https://github.com/adptCode" target="_blank">Alessandro De Pietri Tonelli</a></li>
+    <li><a href="https://github.com/carlos-full-stack" target="_blank">Carlos Martinez</a></li>
+    <li><a href="https://github.com/fran-cesc" target="_blank">Francesc Ferrer</a></li>
+    <li><a href="https://github.com/Yul1b3th" target="_blank">Yulibeth Rivero</a></li>
+</ul>
 
-## Funcionalidades de la Aplicación Web
+## Contribuciones
 
-La aplicación web permite a los usuarios:
+Si deseas colaborar en este proyecto o informar sobre problemas, no dudes en
+crear un "issue" o enviar un "pull request."
 
-- Visualizar en un mapa interactivo los indicadores de renta media familiar, actividades educativas y establecimientos educativos (reglados y no reglados) por distrito.
-- Consultar cómo se distribuyen las actividades educativas por los centros cívicos en cada distrito.
-- Explorar la relación entre la renta familiar y la cantidad de actividades educativas por distrito.
+## Licencia
 
-Estas funcionalidades buscan proporcionar a los usuarios una herramienta de fácil consulta para comprender mejor la distribución de los recursos educativos en la ciudad de Barcelona.
-
-## Ejemplo de Código HTML
-
-```html
-<div class="col-2 flex flex-wrap">
-  <div class="flex justify-center items-center text-sm text-center w-[120px] bg-low">
-    <span>Fins a 35k</span>
-  </div>
-  <div class="flex justify-center items-center text-sm text-center w-[120px] bg-medium">
-    <span>De 35k a 45k</span>
-  </div>
-  <div class="flex justify-center items-center text-sm text-center w-[120px] bg-high">
-    <span>De 45k a 55k</span>
-  </div>
-  <div class="flex justify-center items-center text-sm text-center w-[120px] bg-veryHigh">
-    <span>De 55k a 65k</span>
-  </div>
-  <div class="flex justify-center items-center text-sm text-center w-[120px] bg-extreme">
-    <span>De 65k a 80k</span>
-  </div>
-</div>
-```
+Este proyecto está bajo la Licencia [Nombre de la Licencia]. Ver el archivo
+LICENSE.md para más detalles.
