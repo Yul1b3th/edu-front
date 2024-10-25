@@ -4,7 +4,7 @@
   "scripts": {
     "ng": "ng",
     "envs": "node ./scripts/set-envs.js",
-    "start": "npm run envs && ng serve -o",
+    "start": "node -r dotenv/config set-envs.js && ng serve -o",
     "build": "npm run envs && ng build",
     "watch": "ng build --watch --configuration development",
     "test": "ng test"
