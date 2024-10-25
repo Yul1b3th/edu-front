@@ -3,35 +3,40 @@ import {
   AfterViewInit,
   Component,
   effect,
+  ElementRef,
   inject,
-  OnInit,
+  ViewChild,
 } from '@angular/core';
-import { environment } from '@environments/environment.development';
-import { Data } from '@interfaces/data';
 import { GeoJSONDistrict } from '@interfaces/geoJsonDistrict';
 import { InfantilData } from '@interfaces/infantil.interface';
 import { PrimaryData } from '@interfaces/primary.interface';
 import { SecondaryData } from '@interfaces/secondary.interface';
 import { CentreFiltersService } from '@services/centre-filters.service';
 import { EduService } from '@services/edu.service';
-import mapboxgl from 'mapbox-gl';
 
-mapboxgl.accessToken =
-  'pk.eyJ1IjoiYWRwdGNvZGUiLCJhIjoiY20yajNyM2wxMDFoaDJqc2I4dG5keXAzaCJ9.qIRLrPbj_pGnE0QzjbwkUw';
+import { Map, Marker, LngLat, LngLatBounds, Popup } from 'mapbox-gl';
 
 @Component({
   selector: 'app-map',
   standalone: true,
   imports: [],
   templateUrl: './map.component.html',
-  styleUrl: './map.component.scss',
+  styleUrls: ['./map.component.scss'],
 })
 export class MapComponent implements AfterViewInit {
   private readonly centreFiltersService = inject(CentreFiltersService);
   private http = inject(HttpClient);
   private eduService = inject(EduService);
-  map!: mapboxgl.Map;
-  private markers: mapboxgl.Marker[] = []; // Almacena los marcadores
+
+  private markers: Marker[] = [];
+  public map?: Map;
+
+  // Coordenadas iniciales de la ciudad de Barcelona
+  public lngLat: [number, number] = [2.17, 41.33];
+
+  private defaultZoom: number = 10.7;
+
+  @ViewChild('map', { static: false }) divMap?: ElementRef;
 
   constructor() {
     // Reaccionar a los cambios en la señal selectedCentre
@@ -43,105 +48,111 @@ export class MapComponent implements AfterViewInit {
   }
 
   ngAfterViewInit(): void {
-    // Inicializa el mapa
-    this.map = new mapboxgl.Map({
-      accessToken: environment.mapboxToken,
-      container: 'map', // ID del contenedor en el HTML
-      style: 'mapbox://styles/mapbox/streets-v11',
-      center: [2.1734, 41.3851], // Coordenadas de Barcelona
-      zoom: 12,
+    // Verifica si el elemento HTML existe antes de inicializar el mapa
+    if (!this.divMap)
+      throw new Error('El elemento HTML del mapa no fue encontrado');
+    this.initializeMap();
+    // Listener para redimensionar
+    window.addEventListener('resize', () => {
+      this.updateMapOnResize();
     });
 
-    // Cargar los datos de los límites de los distritos desde el archivo JSON
+    // Inicializar mapa en el tamaño adecuado
+    this.updateMapOnResize();
+  }
+
+  // Inicializa el mapa de Mapbox
+  private initializeMap(): void {
+    this.map = new Map({
+      container: this.divMap?.nativeElement,
+      style: 'mapbox://styles/mapbox/streets-v11',
+      center: this.lngLat,
+      zoom: 10.7,
+    });
+
     this.map.on('load', () => {
-      this.http
-        .get<GeoJSONDistrict[]>('/barcelona-distritos.json')
-        .subscribe((data: GeoJSONDistrict[]) => {
-          const geojsonData = this.convertToGeoJson(data);
-
-          this.map.addSource('distritos', {
-            type: 'geojson',
-            data: geojsonData,
-          });
-
-          this.map.addLayer({
-            id: 'distritos-fill',
-            type: 'fill',
-            source: 'distritos',
-            paint: {
-              'fill-color': '#ccc', // Color inicial, se actualizará luego
-              'fill-opacity': 0.6,
-            },
-          });
-
-          // Añadir un borde a los distritos
-          this.map.addLayer({
-            id: 'distritos-line',
-            type: 'line',
-            source: 'distritos',
-            paint: {
-              'line-color': '#000',
-              'line-width': 2,
-            },
-          });
-
-          // Después de agregar los límites de los distritos, obtener los datos del backend
-          this.loadRentaDataAndUpdateMap();
-        });
+      this.loadDistrictsBoundary();
     });
   }
 
-  // Función para convertir los datos del JSON a un formato GeoJSON
-  convertToGeoJson(data: any[]): any {
-    const features = data.map((distrito) => ({
-      type: 'Feature',
-      properties: {
-        nombre: distrito.nom_districte,
-        id: distrito.Codi_Districte,
-        valor: 0, // Valor inicial por defecto
-      },
-      geometry: {
-        type: 'Polygon',
-        coordinates: this.convertCoordinates(distrito.geometria_wgs84),
-      },
-    }));
+  // Cargar límites de los distritos y establecer capas en el mapa
+  private loadDistrictsBoundary(): void {
+    this.http
+      .get<GeoJSONDistrict[]>('/barcelona-distritos.json')
+      .subscribe((data: GeoJSONDistrict[]) => {
+        const geojsonData = this.convertToGeoJson(data);
 
+        this.map?.addSource('distritos', {
+          type: 'geojson',
+          data: geojsonData,
+        });
+
+        this.map?.addLayer({
+          id: 'distritos-fill',
+          type: 'fill',
+          source: 'distritos',
+          paint: {
+            'fill-color': '#ccc',
+            'fill-opacity': 0.6,
+          },
+        });
+
+        this.map?.addLayer({
+          id: 'distritos-line',
+          type: 'line',
+          source: 'distritos',
+          paint: {
+            'line-color': '#000',
+            'line-width': 2,
+          },
+        });
+
+        this.loadRentaDataAndUpdateMap();
+      });
+  }
+
+  // Función para convertir los datos de distritos a GeoJSON
+  private convertToGeoJson(data: GeoJSONDistrict[]): any {
     return {
       type: 'FeatureCollection',
-      features: features,
+      features: data.map((distrito) => ({
+        type: 'Feature',
+        properties: {
+          nombre: distrito.nom_districte,
+          id: distrito.Codi_Districte,
+          valor: 0,
+        },
+        geometry: {
+          type: 'Polygon',
+          coordinates: this.convertCoordinates(distrito.geometria_wgs84),
+        },
+      })),
     };
   }
 
-  // Función para convertir las coordenadas en formato WGS84 a un array de arrays de coordenadas
-  convertCoordinates(geometryString: string): any[] {
-    const coordinatesString = geometryString
-      .replace('POLYGON ((', '')
-      .replace('))', '')
-      .split(', ');
-
-    const coordinates = coordinatesString.map((pair) => {
-      const [long, lat] = pair.split(' ').map(Number);
-      return [long, lat];
-    });
-
-    return [coordinates];
+  // Convierte las coordenadas WGS84 en un array de arrays de coordenadas
+  private convertCoordinates(geometryString: string): any[] {
+    return [
+      geometryString
+        .replace('POLYGON ((', '')
+        .replace('))', '')
+        .split(', ')
+        .map((pair) => pair.split(' ').map(Number)),
+    ];
   }
 
-  // Cargar los datos de la renta per cápita desde el backend y actualizar el mapa
-  loadRentaDataAndUpdateMap(): void {
+  // Cargar los datos de renta y actualizar el mapa
+  private loadRentaDataAndUpdateMap(): void {
     this.eduService.getRentaData().subscribe((rentaData: any) => {
-      const source = this.map.getSource('distritos') as mapboxgl.GeoJSONSource;
-
+      const source = this.map?.getSource('distritos') as mapboxgl.GeoJSONSource;
       if (source) {
-        // Actualizar los datos de GeoJSON con la renta per cápita y asignar el colorIndex
         const updatedFeatures = (
           source._data as GeoJSON.FeatureCollection
         ).features.map((feature: any) => {
-          const renta = rentaData.find((r: any) => {
-            // Asegurarse de que los IDs estén en el mismo formato para la comparación
-            return r.id.toString().padStart(2, '0') === feature.properties.id;
-          });
-
+          const renta = rentaData.find(
+            (r: any) =>
+              r.id.toString().padStart(2, '0') === feature.properties.id,
+          );
           return {
             ...feature,
             properties: {
@@ -153,152 +164,87 @@ export class MapComponent implements AfterViewInit {
             },
           };
         });
-
-        // Verificar si los valores se están asignando correctamente
-        console.log('Updated Features:', updatedFeatures);
-
-        // Asegurarse de actualizar la fuente correctamente
         source.setData({
           type: 'FeatureCollection',
           features: updatedFeatures,
         });
-
-        // Actualizar los colores de los distritos en función de la renta
-        this.map.setPaintProperty('distritos-fill', 'fill-color', [
-          'interpolate',
-          ['linear'],
-          ['get', 'valor'],
-          35000,
-          '#f28cb1', // Color para valores bajos (rosa)
-          45000,
-          '#3bb2d0', // Color para valores medios (azul claro)
-          55000,
-          '#2a9d8f', // Color adicional para valores altos (verde esmeralda)
-          65000,
-          '#e9c46a', // Color adicional para valores muy altos (amarillo claro)
-          80000,
-          '#e76f51', // Color para valores extremadamente altos (naranja)
-        ]);
+        this.setFillColorBasedOnRenta();
       }
     });
   }
 
-  // Cargar los datos de infantil y dibujar círculos en el mapa
-  loadInfantilDataAndUpdateMap(): void {
-    this.eduService
-      .getInfantilData()
-      .subscribe((infantilData: InfantilData[]) => {
-        this.clearMarkers(); // Eliminar marcadores anteriores
-        infantilData.forEach((distrito) => {
-          console.log(distrito);
-          const coordinates = this.getDistrictCoordinates(distrito.name);
-          if (coordinates) {
-            const marker = new mapboxgl.Marker({
-              color: 'blue', // Color para Infantil
-              scale: distrito.percentage ? distrito.percentage / 10 : 1, // Fallback si percentage es indefinido
-            })
-              .setLngLat(coordinates)
-              .addTo(this.map);
-
-                // Crea il popup con le informazioni di 'percentage' e 'total'
-        const popup = new mapboxgl.Popup({ offset: 25 }).setHTML(
-          `<h4>${distrito.name}</h4>
-          <p><strong>Total:</strong> ${distrito.total}</p>
-          <p><strong>Percentage:</strong> ${distrito.percentage.toFixed(2)}%</p>`
-        );
-
-        // Aggiungi l'evento 'click' al marker per aprire il popup
-        marker.setPopup(popup);
-
-            this.markers.push(marker); // Almacenar el marcador
-          }
-        });
-      });
+  // Configura el color del mapa en función de los datos de renta
+  private setFillColorBasedOnRenta(): void {
+    this.map?.setPaintProperty('distritos-fill', 'fill-color', [
+      'interpolate',
+      ['linear'],
+      ['get', 'valor'],
+      35000,
+      '#f28cb1',
+      45000,
+      '#3bb2d0',
+      55000,
+      '#2a9d8f',
+      65000,
+      '#e9c46a',
+      80000,
+      '#e76f51',
+    ]);
   }
 
-  // Cargar los datos de primaria y dibujar círculos en el mapa
-  loadPrimaryDataAndUpdateMap(): void {
-    this.eduService.getPrimaryData().subscribe((primaryData: PrimaryData[]) => {
-      this.clearMarkers(); // Eliminar marcadores anteriores
-      primaryData.forEach((distrito) => {
-        console.log(distrito);
+  // Llamadas de actualización del mapa basadas en el centro seleccionado
+  private updateMapBasedOnSelectedCentre(selectedCentre: string): void {
+    this.clearMarkers();
+    if (selectedCentre === 'Infantil') {
+      this.loadCentreDataAndAddMarkers('infantil', 'blue');
+    } else if (selectedCentre === 'Primaria') {
+      this.loadCentreDataAndAddMarkers('primary', 'green');
+    } else if (selectedCentre === 'Secundària') {
+      this.loadCentreDataAndAddMarkers('secondary', 'orange');
+    }
+  }
+
+  // Cargar los datos de un centro y añadir los marcadores
+  private loadCentreDataAndAddMarkers(centreType: string, color: string): void {
+    const dataLoader = {
+      infantil: this.eduService.getInfantilData(),
+      primary: this.eduService.getPrimaryData(),
+      secondary: this.eduService.getSecondaryData(),
+    }[centreType];
+
+    dataLoader!.subscribe((data: any[]) => {
+      data.forEach((distrito) => {
         const coordinates = this.getDistrictCoordinates(distrito.name);
         if (coordinates) {
-          const marker = new mapboxgl.Marker({
-            color: 'green', // Color para Primaria
-            scale: distrito.percentage ? distrito.percentage / 10 : 1, // Fallback si percentage es indefinido
+          const marker = new Marker({
+            color: color,
+            scale: distrito.percentage ? distrito.percentage / 10 : 1,
           })
             .setLngLat(coordinates)
-            .addTo(this.map);
-
-              // Crea il popup con le informazioni di 'percentage' e 'total'
-        const popup = new mapboxgl.Popup({ offset: 25 }).setHTML(
-          `<h4>${distrito.name}</h4>
-          <p><strong>Total:</strong> ${distrito.total}</p>
-          <p><strong>Percentage:</strong> ${distrito.percentage.toFixed(2)}%</p>`
-        );
-
-        // Aggiungi l'evento 'click' al marker per aprire il popup
-        marker.setPopup(popup);
-
-          this.markers.push(marker); // Almacenar el marcador
+            .addTo(this.map!)
+            .setPopup(
+              new Popup({ offset: 25 }).setHTML(
+                `<h4>${distrito.name}</h4>
+                <p><strong>Total:</strong> ${distrito.total}</p>
+                <p><strong>Percentage:</strong> ${distrito.percentage.toFixed(2)}%</p>`,
+              ),
+            );
+          this.markers.push(marker);
         }
       });
     });
   }
 
-  // Cargar los datos de secundaria y dibujar círculos en el mapa
-  loadSecondaryDataAndUpdateMap(): void {
-    this.eduService
-      .getSecondaryData()
-      .subscribe((secondaryData: SecondaryData[]) => {
-        this.clearMarkers(); // Eliminar marcadores anteriores
-        secondaryData.forEach((distrito) => {
-          console.log(distrito);
-          const coordinates = this.getDistrictCoordinates(distrito.name);
-          if (coordinates) {
-            const marker = new mapboxgl.Marker({
-              color: 'orange', // Color para Secundària
-              scale: distrito.percentage ? distrito.percentage / 10 : 1, // Fallback si percentage es indefinido
-            })
-              .setLngLat(coordinates)
-              .addTo(this.map);
-
-                // Crea il popup con le informazioni di 'percentage' e 'total'
-        const popup = new mapboxgl.Popup({ offset: 25 }).setHTML(
-          `<h4>${distrito.name}</h4>
-          <p><strong>Total:</strong> ${distrito.total}</p>
-          <p><strong>Percentage:</strong> ${distrito.percentage.toFixed(2)}%</p>`
-        );
-
-        // Aggiungi l'evento 'click' al marker per aprire il popup
-        marker.setPopup(popup);
-
-            this.markers.push(marker); // Almacenar el marcador
-          }
-        });
-      });
-  }
-
-  // Limpiar marcadores del mapa
-  clearMarkers(): void {
+  // Elimina todos los marcadores del mapa
+  private clearMarkers(): void {
     this.markers.forEach((marker) => marker.remove());
-    this.markers = []; // Reiniciar la lista de marcadores
+    this.markers = [];
   }
 
-  // Función que actualiza el mapa basado en el centro seleccionado
-  updateMapBasedOnSelectedCentre(selectedCentre: string): void {
-    if (selectedCentre === 'Infantil') {
-      this.loadInfantilDataAndUpdateMap();
-    } else if (selectedCentre === 'Primaria') {
-      this.loadPrimaryDataAndUpdateMap();
-    } else if (selectedCentre === 'Secundària') {
-      this.loadSecondaryDataAndUpdateMap();
-    }
-  }
-
-  // Obtener las coordenadas del distrito por nombre
-  getDistrictCoordinates(districtName: string): [number, number] | null {
+  // Obtener las coordenadas de un distrito
+  private getDistrictCoordinates(
+    districtName: string,
+  ): [number, number] | null {
     const districtCoordinates: { [key: string]: [number, number] } = {
       'Ciutat Vella': [2.1734, 41.3851],
       Gràcia: [2.15899, 41.4096],
@@ -311,7 +257,27 @@ export class MapComponent implements AfterViewInit {
       'Sants-Montjuïc': [2.1419, 41.3723],
       'Sarrià-Sant Gervasi': [2.1343, 41.401],
     };
-
     return districtCoordinates[districtName] || null;
+  }
+
+  private updateMapOnResize(): void {
+    console.log('Resizing map');
+
+    if (this.map) {
+      const windowWidth = window.innerWidth;
+
+      if (windowWidth >= 767.98) {
+        // Configuraciones para dispositivos móviles
+        this.map.setZoom(10.7); // Ajusta el zoom para móviles
+        this.lngLat = [2.32, 41.33];
+        this.map.setCenter(this.lngLat); // Re-centra el mapa
+      } else {
+        // Configuraciones para otros dispositivos
+        this.map.setZoom(this.defaultZoom); // Ajusta el zoom para desktop
+        this.map.setCenter(this.lngLat); // Re-centra el mapa
+      }
+
+      this.map.resize(); // Ajusta el tamaño del mapa al nuevo tamaño de la ventana
+    }
   }
 }

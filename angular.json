@@ -29,7 +29,10 @@
                 "input": "public"
               }
             ],
-            "styles": ["src/styles.scss"],
+            "styles": [
+              "node_modules/mapbox-gl/dist/mapbox-gl.css",
+              "src/styles.scss"
+            ],
             "scripts": []
           },
           "configurations": {
