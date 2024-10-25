@@ -1,12 +1,13 @@
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
+
+import { Observable, tap } from 'rxjs';
+
 import { environment } from '@environments/environment.development';
 import { Data } from '@interfaces/data';
 import { InfantilData } from '@interfaces/infantil.interface';
 import { PrimaryData } from '@interfaces/primary.interface';
 import { SecondaryData } from '@interfaces/secondary.interface';
-
-import { Observable, tap } from 'rxjs';
 
 @Injectable({
   providedIn: 'root',
