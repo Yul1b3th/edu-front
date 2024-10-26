@@ -47,12 +47,22 @@ export class HomeComponent {
 
     const isActive = button.classList.contains('active');
 
+    if (this.activeButton && this.activeButton !== button) {
+      this.activeButton.classList.remove('active');
+    }
+
     if (!isActive) {
       button.classList.add('active');
-      this.rentaFiltersService.selectedRenta.set(rentaRange);
+      this.activeButton = button;
+      requestAnimationFrame(() => {
+        this.rentaFiltersService.selectedRenta.set(rentaRange);
+      });
     } else {
       button.classList.remove('active');
-      this.rentaFiltersService.selectedRenta.set(null);
+      this.activeButton = null;
+      requestAnimationFrame(() => {
+        this.rentaFiltersService.selectedRenta.set(null);
+      });
     }
   }
 }
