@@ -5,16 +5,15 @@ import {
   effect,
   ElementRef,
   inject,
+  OnDestroy,
   ViewChild,
 } from '@angular/core';
+import { Map, Marker, LngLat, LngLatBounds, Popup } from 'mapbox-gl';
 import { GeoJSONDistrict } from '@interfaces/geoJsonDistrict';
-import { InfantilData } from '@interfaces/infantil.interface';
-import { PrimaryData } from '@interfaces/primary.interface';
-import { SecondaryData } from '@interfaces/secondary.interface';
 import { CentreFiltersService } from '@services/centre-filters.service';
 import { EduService } from '@services/edu.service';
-
-import { Map, Marker, LngLat, LngLatBounds, Popup } from 'mapbox-gl';
+import { RentaFiltersService } from '@services/renta-filters.service';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-map',
@@ -23,13 +22,15 @@ import { Map, Marker, LngLat, LngLatBounds, Popup } from 'mapbox-gl';
   templateUrl: './map.component.html',
   styleUrls: ['./map.component.scss'],
 })
-export class MapComponent implements AfterViewInit {
+export class MapComponent implements AfterViewInit, OnDestroy {
   private readonly centreFiltersService = inject(CentreFiltersService);
+  private readonly rentaFiltersService = inject(RentaFiltersService);
   private http = inject(HttpClient);
   private eduService = inject(EduService);
 
   private markers: Marker[] = [];
   public map?: Map;
+  private isDataLoaded = false; // Bandera para verificar si los datos están cargados
 
   // Coordenadas iniciales de la ciudad de Barcelona
   public lngLat: [number, number] = [2.17, 41.33];
@@ -38,12 +39,19 @@ export class MapComponent implements AfterViewInit {
 
   @ViewChild('map', { static: false }) divMap?: ElementRef;
 
+  private subscriptions: Subscription[] = [];
+
   constructor() {
     // Reaccionar a los cambios en la señal selectedCentre
     effect(() => {
       const selectedCentre = this.centreFiltersService.selectedCentre();
-      console.log('Selected Centre changed:', selectedCentre);
       this.updateMapBasedOnSelectedCentre(selectedCentre);
+    });
+
+    // Reaccionar a los cambios en la señal selectedRenta
+    effect(() => {
+      const selectedRenta = this.rentaFiltersService.selectedRenta();
+      this.highlightDistrictsByRenta(selectedRenta);
     });
   }
 
@@ -61,6 +69,11 @@ export class MapComponent implements AfterViewInit {
     this.updateMapOnResize();
   }
 
+  ngOnDestroy(): void {
+    // Desuscribirse de todas las suscripciones
+    this.subscriptions.forEach((sub) => sub.unsubscribe());
+  }
+
   // Inicializa el mapa de Mapbox
   private initializeMap(): void {
     this.map = new Map({
@@ -75,44 +88,134 @@ export class MapComponent implements AfterViewInit {
     });
   }
 
-  // Cargar límites de los distritos y establecer capas en el mapa
   private loadDistrictsBoundary(): void {
-    this.http
-      .get<GeoJSONDistrict[]>('/barcelona-distritos.json')
-      .subscribe((data: GeoJSONDistrict[]) => {
-        const geojsonData = this.convertToGeoJson(data);
+    this.http.get<GeoJSONDistrict[]>('/barcelona-distritos.json').subscribe({
+      next: (districtData: GeoJSONDistrict[]) => {
+        console.log('Datos de distritos cargados:', districtData);
 
-        this.map?.addSource('distritos', {
-          type: 'geojson',
-          data: geojsonData,
+        // Cargar los datos de renta y combinar con los datos de distritos
+        this.eduService.getRentaData().subscribe((rentaData: any) => {
+          console.log('Datos de renta cargados:', rentaData);
+
+          // Combinar los datos de renta con los datos de distritos basándote en el nombre del distrito
+          const combinedData = districtData.map((district) => {
+            const renta = rentaData.find(
+              (r: any) => r.name === district.nom_districte
+            );
+            return {
+              ...district,
+              valor: renta ? renta.valor : 0,
+              colorIndex: renta ? renta.colorIndex : -1,
+            };
+          });
+
+          console.log('Datos combinados:', combinedData);
+
+          const geojsonData = this.convertToGeoJson(combinedData);
+
+          // Asegurarse de que el mapa esté inicializado
+          if (!this.map) {
+            console.error('El mapa no está inicializado.');
+            return;
+          }
+
+          // Añadir la fuente de datos de distritos al mapa
+          this.map.addSource('distritos', {
+            type: 'geojson',
+            data: geojsonData,
+          });
+
+          // Añadir la capa de relleno de distritos
+          this.map.addLayer({
+            id: 'distritos-fill',
+            type: 'fill',
+            source: 'distritos',
+            paint: {
+              'fill-color': '#ccc',
+              'fill-opacity': 0.6,
+            },
+          });
+
+          // Añadir la capa de contorno de distritos
+          this.map.addLayer({
+            id: 'distritos-line',
+            type: 'line',
+            source: 'distritos',
+            paint: {
+              'line-color': '#000',
+              'line-width': 2,
+            },
+          });
+
+          // Configurar el color del mapa en función de los datos de renta
+          this.setFillColorBasedOnRenta();
+
+          // Establecer la bandera isDataLoaded en true
+          this.isDataLoaded = true;
         });
+      },
+      error: (err) => {
+        console.error('Error al cargar los distritos:', err);
+      },
+    });
+  }
 
-        this.map?.addLayer({
-          id: 'distritos-fill',
-          type: 'fill',
-          source: 'distritos',
-          paint: {
-            'fill-color': '#ccc',
-            'fill-opacity': 0.6,
+  // Configura el color del mapa en función de los datos de renta
+  private setFillColorBasedOnRenta(): void {
+    const source = this.map?.getSource('distritos') as mapboxgl.GeoJSONSource;
+    if (source && typeof source._data !== 'string') {
+      const features = (source._data as GeoJSON.FeatureCollection).features;
+
+      // Redondear los valores de renta a los límites de los rangos
+      const updatedFeatures = features.map((feature: any) => {
+        let valor = feature.properties.valor;
+        if (valor <= 40000) {
+          valor = 40000;
+        } else if (valor <= 50000) {
+          valor = 50000;
+        } else if (valor <= 60000) {
+          valor = 60000;
+        } else if (valor <= 80000) {
+          valor = 80000;
+        } else {
+          valor = 100000;
+        }
+        return {
+          ...feature,
+          properties: {
+            ...feature.properties,
+            valor: valor,
           },
-        });
-
-        this.map?.addLayer({
-          id: 'distritos-line',
-          type: 'line',
-          source: 'distritos',
-          paint: {
-            'line-color': '#000',
-            'line-width': 2,
-          },
-        });
-
-        this.loadRentaDataAndUpdateMap();
+        };
       });
+
+      source.setData({
+        type: 'FeatureCollection',
+        features: updatedFeatures,
+      });
+
+      this.map?.setPaintProperty('distritos-fill', 'fill-color', [
+        'match',
+        ['get', 'valor'],
+        40000,
+        '#F28CB1', // Hasta 40k -> Rosa claro
+        50000,
+        '#3BB2D0', // De 40k a 50k -> Azul claro
+        60000,
+        '#2A9D8F', // De 50k a 60k -> Amarillo claro
+        80000,
+        '#E9C46A', // De 60k a 80k -> Naranja claro
+        100000,
+        '#E76F51', // Más de 80k -> Rojo oscuro
+        /* default */ '#ccc',
+      ]);
+    } else {
+      console.error('La fuente de datos no está disponible o no es válida.');
+    }
   }
 
   // Función para convertir los datos de distritos a GeoJSON
-  private convertToGeoJson(data: GeoJSONDistrict[]): any {
+  private convertToGeoJson(data: any[]): any {
     return {
       type: 'FeatureCollection',
       features: data.map((distrito) => ({
@@ -120,7 +223,8 @@ export class MapComponent implements AfterViewInit {
         properties: {
           nombre: distrito.nom_districte,
           id: distrito.Codi_Districte,
-          valor: 0,
+          valor: distrito.valor,
+          colorIndex: distrito.colorIndex,
         },
         geometry: {
           type: 'Polygon',
@@ -139,57 +243,6 @@ export class MapComponent implements AfterViewInit {
         .split(', ')
         .map((pair) => pair.split(' ').map(Number)),
     ];
-  }
-
-  // Cargar los datos de renta y actualizar el mapa
-  private loadRentaDataAndUpdateMap(): void {
-    this.eduService.getRentaData().subscribe((rentaData: any) => {
-      const source = this.map?.getSource('distritos') as mapboxgl.GeoJSONSource;
-      if (source) {
-        const updatedFeatures = (
-          source._data as GeoJSON.FeatureCollection
-        ).features.map((feature: any) => {
-          const renta = rentaData.find(
-            (r: any) =>
-              r.id.toString().padStart(2, '0') === feature.properties.id,
-          );
-          return {
-            ...feature,
-            properties: {
-              ...feature.properties,
-              valor: renta ? renta.valor : feature.properties.valor,
-              colorIndex: renta
-                ? renta.colorIndex
-                : feature.properties.colorIndex,
-            },
-          };
-        });
-        source.setData({
-          type: 'FeatureCollection',
-          features: updatedFeatures,
-        });
-        this.setFillColorBasedOnRenta();
-      }
-    });
-  }
-
-  // Configura el color del mapa en función de los datos de renta
-  private setFillColorBasedOnRenta(): void {
-    this.map?.setPaintProperty('distritos-fill', 'fill-color', [
-      'interpolate',
-      ['linear'],
-      ['get', 'valor'],
-      35000,
-      '#f28cb1',
-      45000,
-      '#3bb2d0',
-      55000,
-      '#2a9d8f',
-      65000,
-      '#e9c46a',
-      80000,
-      '#e76f51',
-    ]);
   }
 
   // Llamadas de actualización del mapa basadas en el centro seleccionado
@@ -226,8 +279,10 @@ export class MapComponent implements AfterViewInit {
               new Popup({ offset: 25 }).setHTML(
                 `<h4>${distrito.name}</h4>
                 <p><strong>Total:</strong> ${distrito.total}</p>
-                <p><strong>Percentage:</strong> ${distrito.percentage.toFixed(2)}%</p>`,
-              ),
+                <p><strong>Percentage:</strong> ${distrito.percentage.toFixed(
+                  2
+                )}%</p>`
+              )
             );
           this.markers.push(marker);
         }
@@ -243,7 +298,7 @@ export class MapComponent implements AfterViewInit {
 
   // Obtener las coordenadas de un distrito
   private getDistrictCoordinates(
-    districtName: string,
+    districtName: string
   ): [number, number] | null {
     const districtCoordinates: { [key: string]: [number, number] } = {
       'Ciutat Vella': [2.1734, 41.3851],
@@ -261,8 +316,6 @@ export class MapComponent implements AfterViewInit {
   }
 
   private updateMapOnResize(): void {
-    console.log('Resizing map');
-
     if (this.map) {
       const windowWidth = window.innerWidth;
 
@@ -278,6 +331,80 @@ export class MapComponent implements AfterViewInit {
       }
 
       this.map.resize(); // Ajusta el tamaño del mapa al nuevo tamaño de la ventana
+    }
+  }
+
+  // Destacar los distritos con un color más oscuro en función de la renta seleccionada
+  private highlightDistrictsByRenta(rentaRange: string | null): void {
+    if (!this.isDataLoaded) return;
+
+    const colorMapping: { [key: number]: string } = {
+      40000: '#F28CB1', // Hasta 40k -> Rosa claro
+      50000: '#3BB2D0', // De 40k a 50k -> Azul claro
+      60000: '#2A9D8F', // De 50k a 60k -> Amarillo claro
+      80000: '#E9C46A', // De 60k a 80k -> Naranja claro
+      100000: '#E76F51', // Más de 80k -> Rojo oscuro
+    };
+
+    const highlightColorMapping: { [key: number]: string } = {
+      40000: '#D81B60', // Hasta 40k -> Rosa oscuro
+      50000: '#1976D2', // De 40k a 50k -> Azul oscuro
+      60000: '#00796B', // De 50k a 60k -> Verde oscuro
+      80000: '#F57C00', // De 60k a 80k -> Naranja oscuro
+      100000: '#C62828', // Más de 80k -> Rojo oscuro
+    };
+
+    const source = this.map?.getSource('distritos') as mapboxgl.GeoJSONSource;
+    if (source && typeof source._data !== 'string') {
+      const features = (source._data as GeoJSON.FeatureCollection).features;
+
+      const updatedFeatures = features.map((feature: any) => {
+        const valor = feature.properties.valor;
+        const color =
+          rentaRange && valor === parseInt(rentaRange)
+            ? highlightColorMapping[valor]
+            : colorMapping[valor];
+        return {
+          ...feature,
+          properties: {
+            ...feature.properties,
+            color: color,
+          },
+        };
+      });
+
+      source.setData({
+        type: 'FeatureCollection',
+        features: updatedFeatures,
+      });
+
+      this.map?.setPaintProperty('distritos-fill', 'fill-color', [
+        'match',
+        ['get', 'color'],
+        highlightColorMapping[40000],
+        highlightColorMapping[40000],
+        highlightColorMapping[50000],
+        highlightColorMapping[50000],
+        highlightColorMapping[60000],
+        highlightColorMapping[60000],
+        highlightColorMapping[80000],
+        highlightColorMapping[80000],
+        highlightColorMapping[100000],
+        highlightColorMapping[100000],
+        colorMapping[40000],
+        colorMapping[40000],
+        colorMapping[50000],
+        colorMapping[50000],
+        colorMapping[60000],
+        colorMapping[60000],
+        colorMapping[80000],
+        colorMapping[80000],
+        colorMapping[100000],
+        colorMapping[100000],
+        /* default */ '#ccc',
+      ]);
+    } else {
+      console.error('La fuente de datos no está disponible o no es válida.');
     }
   }
 }

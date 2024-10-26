@@ -12,12 +12,13 @@
           >
             <!-- Filtros -->
             <h3 class="text-xl mb-2 text-center">Filtrar per centre:</h3>
-            <ul
+            <div
               class="flex flex-wrap md:flex-row flex-wrap justify-center md:flex-col md:flex-row gap-x-4 gap-y-3 md:gap-y-6"
             >
               <!-- Tots -->
               <!-- <button
-                (click)="handleClick($event)"
+                 data-type="centre"
+                (click)="handleCentreClick($event)"
                 class="text-sm text-center bg-gray-500 transform hover:scale-105 transition-transform duration-300 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded-full cursor-pointer"
               >
                 Tots
@@ -25,7 +26,8 @@
 
               <!-- Infantil -->
               <button
-                (click)="handleClick($event)"
+                data-type="centre"
+                (click)="handleCentreClick($event)"
                 class="text-sm text-center bg-blue-500 hover:scale-105 transition-transform duration-300 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full cursor-pointer"
               >
                 Infantil
@@ -33,7 +35,8 @@
 
               <!-- Primaria -->
               <button
-                (click)="handleClick($event)"
+                data-type="centre"
+                (click)="handleCentreClick($event)"
                 class="text-sm text-center bg-green-500 hover:scale-105 transition-transform duration-300 hover:bg-green-700 text-white font-bold py-2 px-4 rounded-full cursor-pointer"
               >
                 Primaria
@@ -41,28 +44,13 @@
 
               <!-- Secundària -->
               <button
-                (click)="handleClick($event)"
+                data-type="centre"
+                (click)="handleCentreClick($event)"
                 class="text-sm text-center bg-orange-500 hover:scale-105 transition-transform duration-300 hover:bg-orange-700 text-white font-bold py-2 px-4 rounded-full cursor-pointer"
               >
                 Secundària
               </button>
-
-              <!-- Universitària -->
-              <!-- <li
-                class="text-sm text-center bg-blue-500 hover:scale-105 transition-transform duration-300 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full cursor-pointer ">
-                Universitària
-              </li> -->
-              <!-- No reglada -->
-              <!-- <li
-                class="text-sm text-center bg-blue-500 hover:scale-105 transition-transform duration-300 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full cursor-pointer ">
-                No reglada
-              </li> -->
-              <!-- Activitats -->
-              <!-- <li
-                class="text-sm text-center bg-blue-500 hover:scale-105 transition-transform duration-300 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full cursor-pointer ">
-                Activitats
-              </li> -->
-            </ul>
+            </div>
           </nav>
         </div>
         <!-- Columna Derecha -->
@@ -77,35 +65,45 @@
               <div class="col-1 flex justify-center items-center">
                 <span
                   ><i class="fa-solid fa-circle-info pr-2"></i>Renda bruta anual
-                  per unitat familiar:
-                </span>
+                  per unitat familiar:</span
+                >
               </div>
               <div class="col-2 flex flex-wrap">
-                <div
+                <button
+                  data-type="renta"
                   class="flex justify-center items-center text-sm text-center w-[120px] bg-low"
+                  (click)="handleRentaClick($event, '40000')"
                 >
-                  <span>Fins a 35k</span>
-                </div>
-                <div
+                  Fins a 40k
+                </button>
+                <button
+                  data-type="renta"
                   class="flex justify-center items-center text-sm text-center w-[120px] bg-medium"
+                  (click)="handleRentaClick($event, '50000')"
                 >
-                  <span>De 35k a 45k</span>
-                </div>
-                <div
+                  De 40k a 50k
+                </button>
+                <button
+                  data-type="renta"
                   class="flex justify-center items-center text-sm text-center w-[120px] bg-high"
+                  (click)="handleRentaClick($event, '60000')"
                 >
-                  <span>De 45k a 55k</span>
-                </div>
-                <div
+                  De 50k a 60k
+                </button>
+                <button
+                  data-type="renta"
                   class="flex justify-center items-center text-sm text-center w-[120px] bg-veryHigh"
+                  (click)="handleRentaClick($event, '80000')"
                 >
-                  <span>De 55k a 65k</span>
-                </div>
-                <div
+                  De 60k a 80k
+                </button>
+                <button
+                  data-type="renta"
                   class="flex justify-center items-center text-sm text-center w-[120px] bg-extreme"
+                  (click)="handleRentaClick($event, '100000')"
                 >
-                  <span>De 65k a 80k</span>
-                </div>
+                  Més de 80k
+                </button>
               </div>
             </div>
             <!-- <div class="w-full bg-gray-100 text-center mt-10 h-56 rounded-lg shadow-md">

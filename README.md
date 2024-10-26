@@ -162,35 +162,24 @@ tecnología y la innovación, especializados en las siguientes áreas:
 
 #### Equipo Data:
 
-<ul>
-    <li><a href="https://github.com/epili50" target="_blank">Esteban Piliponsky</a></li>
-    <li><a href="https://github.com/ErrePad/" target="_blank">Rodrigo Padilla</a></li>
-    <li><a href="https://github.com/sisolieri" target="_blank">Simone Solieri</a></li>
-</ul>
+- [Esteban Piliponsky](https://github.com/epili50)
+- [Rodrigo Padilla](https://github.com/ErrePad)
+- [Simone Solieri](https://github.com/sisolieri)
 
 #### Equipo Back End:
 
-<ul>
-    <li><a href="https://github.com/amarinite" target="_blank">Alba Marquez</a></li>
-    <li><a href="https://github.com/dKurbi" target="_blank">Diego Kurcbart</a></li>
-    <li><a href="https://github.com/Mettanoia" target="_blank">Miguel Granado</a></li>
-</ul>
+- [Alba Marquez](https://github.com/amarinite)
+- [Diego Kurcbart](https://github.com/dKurbi)
+- [Miguel Granado](https://github.com/Mettanoia)
 
 #### Equipo Front End:
 
-<ul>
-    <li><a href="https://github.com/adptCode" target="_blank">Alessandro De Pietri Tonelli</a></li>
-    <li><a href="https://github.com/carlos-full-stack" target="_blank">Carlos Martinez</a></li>
-    <li><a href="https://github.com/fran-cesc" target="_blank">Francesc Ferrer</a></li>
-    <li><a href="https://github.com/Yul1b3th" target="_blank">Yulibeth Rivero</a></li>
-</ul>
+- [Alessandro De Pietri Tonelli](https://github.com/adptCode)
+- [Carlos Martinez](https://github.com/carlos-full-stack)
+- [Francesc Ferrer](https://github.com/fran-cesc)
+- [Yulibeth Rivero](https://github.com/Yul1b3th)
 
 ## Contribuciones
 
 Si deseas colaborar en este proyecto o informar sobre problemas, no dudes en
 crear un "issue" o enviar un "pull request."
-
-## Licencia
-
-Este proyecto está bajo la Licencia [Nombre de la Licencia]. Ver el archivo
-LICENSE.md para más detalles.
